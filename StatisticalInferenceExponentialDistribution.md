@@ -1,28 +1,10 @@
----
-title: 'Statistical Inference: Exponential Distribution'
-author: "Eddie Warner"
-output:
-  pdf_document: default
-  html_document:
-    keep_md: yes
-    theme: united
-references:
-- URL: https://en.wikipedia.org/wiki/Exponential_distribution
-  authors:
-    name: Wikipedia
-  id: wiki_ed
-  title: Exponential distribution
-geometry: margin=1.5cm
----
+# Statistical Inference: Exponential Distribution
+Eddie Warner  
 
 ## Overview: 
 
-```{r load_library, echo=FALSE, message=FALSE}
-library(ggplot2)
-library(dplyr)
-library(data.table)
-library(reshape2)
-```
+
+
 
 Explore the exponential distribution as this distribution conforms to the law of large numbers and the how this distribution compares to the Central Limit Theorem. 
 
@@ -40,33 +22,25 @@ For all simulations $\lambda$ will be set to 0.2.
 By definition the theoretical mean $\mu$ is $1 / \lambda$.  
 The variance var would be $1 / \lambda^2$ 
 
-```{r defintions, echo=TRUE}
+
+```r
 lambda <- 0.2; seed <- 789
-μ <- 1 / 0.2; var <- 1 / (0.2 ^ 2)
+µ <- 1 / 0.2; var <- 1 / (0.2 ^ 2)
 num <- 1000; samples <- c(20, 30, 40, 50)
 ```
 
 First plot the exponential distribution for $\lambda 0.2$ using dexp and pexp. 
 
-```{r sumlations, echo=FALSE, fig.height=3}
-exp_dist <- mutate(data.frame(x = seq(0, 10, length=500)))
-exp_dist <- exp_dist %>% 
-    mutate(ydensity = dexp(x)) %>%
-    mutate(ydistribution = pexp(x))
-ed <- ggplot(exp_dist, aes(x=x))
-ed <- ed + geom_line(aes(y=ydensity, colour = "density",),  size = .5)
-ed <- ed + geom_line(aes(y=ydistribution, colour = "distribution"), size = .5)
-ed <- ed + scale_colour_manual("", breaks = c("density", "distribution"), values = c("red3", "blue")) 
-ed <- ed + labs(title="Exponential Distribution: Density, Distribution", x="", y="")
-ed
-```
+![](StatisticalInferenceExponentialDistribution_files/figure-html/sumlations-1.png) 
 
 ## Sample Mean versus Theoretical Mean: 
 
 Plot sample mean vs theorectical mean (population mean) as the sample mean increases. As the sample size increases according to the Central Limit Theorem the sample mean will more closely approximate the population mean. Sample sizes will be 20, 30, 40 and 50. 
 
-```{r sample_mean_vs_pop_mean, echo=TRUE}
-set.seed(seed); sample_means <- data.frame( twenty = replicate(num, mean(rexp(samples[1], lambda))))
+
+```r
+set.seed(seed)
+sample_means <- data.frame( twenty = replicate(num, mean(rexp(samples[1], lambda))))
 sample_means <- sample_means %>% 
     mutate(thirty = replicate(num, mean(rexp(samples[2], lambda)))) %>%     
     mutate(fourty = replicate(num, mean(rexp(samples[3], lambda)))) %>% 
@@ -81,45 +55,52 @@ See plots below for which show not only that the sample mean approaches the popu
 
 |Sample Size | Mean |
 |------------|------|
-|`r samples[1]`|`r col_means["twenty"]`|
-|`r samples[2]`|`r col_means["thirty"]`|
-|`r samples[3]`|`r col_means["fourty"]`|
-|`r samples[4]`|`r col_means["fifty"]`|
+|20|4.9934861|
+|30|4.9905553|
+|40|4.9794017|
+|50|4.9963051|
 
-```{r means_plot, echo=TRUE, message=FALSE, warning=FALSE}
+
+```r
 melt_sample_means <- reshape2::melt(data = sample_means, id.vars = c())
 means_plot <- ggplot(melt_sample_means,aes(x = value)) 
 means_plot <-  means_plot +  facet_wrap(~variable, scales = "fixed")  
-means_plot <-  means_plot +  geom_histogram(col="green4", fill="green",  alpha = .2, binwidth=.1, 
-                                            aes(y = ..density..))
+means_plot <-  means_plot +  geom_histogram(col="green4", fill="green",  alpha = .2, binwidth=.1,
+                 aes(y = ..density..))
 means_plot <-  means_plot + geom_vline(xintercept = 5, col="red3")
 means_plot <-  means_plot + geom_density(col="grey2", size = 1)
 means_plot
-
 ```
+
+![](StatisticalInferenceExponentialDistribution_files/figure-html/means_plot-1.png) 
 
 
 ## Sample Variance versus Theoretical Variance: 
 
 The sample variance of the mean sould approach the theoretical mean of the sample given by $s^2/n$  
 
-```{r variance_sample_mean}
+
+```r
 predicted_means = NULL
 # calculate predicted varance for our sample sizes
-for (i in 1 : length(samples)) {    predicted_means <- c(predicted_means, ((1/lambda)^2)/ samples[i])}
+for (i in 1 : length(samples)) {
+    predicted_means <- c(predicted_means, ((1/lambda)^2)/ samples[i])
+}
 # calculate actual variance for our sample means
 col_var <- sample_means %>% summarise_each(funs(var))
 ```
 
-`r predicted_means`  
+1.25, 0.8333333, 0.625, 0.5  
   
-`r col_var`  
+1.1796791, 0.8466509, 0.6348968, 0.5169846  
 
 
 In a separate calculation the mean of the actual variance for the Exponential Distribution will approach the variance of the population. 
 
-```{r sample_variance_vs_pop_variance, echo=TRUE}
-set.seed(seed); sample_var <- data.frame( twenty = replicate(num, var(rexp(samples[1], lambda))))
+
+```r
+set.seed(seed)
+sample_var <- data.frame( twenty = replicate(num, var(rexp(samples[1], lambda))))
 sample_var <- sample_var %>% 
     mutate(thirty = replicate(num, var(rexp(samples[2], lambda)))) %>%     
     mutate(fourty = replicate(num, var(rexp(samples[3], lambda)))) %>% 
@@ -129,23 +110,10 @@ col_var_mean <- sample_var %>% summarise_each(funs(mean))
 
 As noted in the facts secion above the variance for $\lambda = .2$ is 25.  
 
-`r col_var_mean`
+24.8444376, 25.0083949, 25.1132493, 24.9151761
 
 ## Distribution: 
 
-A distribution is aproximently normal if that distribution is symetric around the mean and fits within a normal distribution. See figure below.
-
-"In probability theory, the central limit theorem (CLT) states that, given certain conditions, the arithmetic mean of a sufficiently large number of iterates of independent random variables, each with a well-defined expected value and well-defined variance, will be approximately normally distributed, regardless of the underlying distribution."
-
-```{r normal, echo=FALSE, fig.height=3}
-normal <- ggplot(sample_means, aes(x = fifty))  
-normal <-  normal +  geom_histogram(col="green4", fill="green",  alpha = .2, binwidth=.1, 
-                                            aes(y = ..density..))
-normal <-  normal + geom_vline(xintercept = 5, col="red3")
-normal <-  normal + stat_function(fun = dnorm, colour="blue", arg = list(mean = μ, sd = sqrt(col_var[[4]])))
-normal
-```
-
-
+Via figures and text, explain how one can tell the distribution is approximately normal.
 
 ## References:
