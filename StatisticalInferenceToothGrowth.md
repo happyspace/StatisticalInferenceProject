@@ -1,16 +1,17 @@
-# Statistical Inference: Exponential Distribution
+# Statistical Inference: Data Exploration
 Eddie Warner  
 
 ## Overview:
 
 Explore the ToothGrowth {datasets} using exploratory data analysis, confidence levels and hypothesis testing. This data set The *Effect of Vitamin C on Tooth Growth in Guinea Pigs* represents the following study.  
 
+### Study Discription
 "The response is the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with each of two delivery methods (orange juice or ascorbic acid)."
 
 
 
 ## Data 
-Load and examine data. Data consists of three columns, interestingly in comparison to ChickWeight there are no identifying column for individual Guinea Pigs. So the assumption must be that each measure was taken with a different subject (pig). 
+Load and examine data. Data consists of three columns, interestingly in comparison to ChickWeight *data(ChickWeight)* there is no identifying column for individual Guinea Pigs. So the assumption must be that each measure was taken with a different subject (pig). 
 
 
 ```r
@@ -39,7 +40,7 @@ str(ToothGrowth)
 ##  $ dose: num  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
 ```
 
-Create a factor based on dose easier grouping and plotting.
+Create a factor based on dose for easier grouping and plotting.
 
 
 ```r
@@ -60,15 +61,16 @@ dose_supp
 ```
 
 ![](StatisticalInferenceToothGrowth_files/figure-html/box_plot-1.png) 
-Empirically from examining the plot dose of vitamin c would be the strongest factor for tooth length. For lower doses of vitamin c orange Juice is more effective than assobic acid.
+  
+Empirically, from examining the plot, dose of vitamin c would be the strongest factor for tooth length. For lower doses of vitamin c, orange Juice is more effective than assobic acid.
 
 ## Analysis
 
-From exploration, the delivry method of Orange Juice was better at low doses. Now confirm this result by performing t-tests testing the different delivery methods for the different dose levels. 
+From exploration, the delivery method of Orange Juice was better at low doses. We will confirm this observation by performing Student's t-test, testing the different delivery methods for the different dose levels. 
 
-As noted above the analysis assumes that each dose ~ delivery where carried out on a different subject (pig). As such we test with the assumption that subjects are not paired and that subject have an unequal varience.
+As noted above, the analysis assumes that each *dose ~ delivery* where carried out on a different subject (pig). As such we test with the assumption that subjects are not paired and that subjects have an unequal variance.
 
-We will assume for our **H0** hypothesis that the delivery method are equal in effectivness. We will use the 95% confidence interval.
+We will assume for our **H0** hypothesis that the delivery method are equal in effectiveness. We will use the 95% confidence interval.
 
 ### Create a wide data set
 
@@ -107,5 +109,55 @@ dose.0.5$p.value
 ```
 ## [1] 0.01547205
 ```
+Based on this test the **H0** hypothesis is rejected for **H1** OJ is more effective at this dose.
 
+### Test Dose = 1.0 mg
+
+
+```r
+dose.1.0 <- t.test(wide['OJ_1.0mg'] - wide['VC_1.0mg'], paired = FALSE, var.equal = FALSE)
+dose.1.0$conf.int
+```
+
+```
+## [1] 1.951911 9.908089
+## attr(,"conf.level")
+## [1] 0.95
+```
+
+```r
+dose.1.0$p.value
+```
+
+```
+## [1] 0.008229248
+```
+Based on this test the **H0** hypothesis is rejected for **H1** OJ is more effective at this dose.
+
+### Test Dose = 2.0 mg
+
+
+```r
+dose.2.0 <- t.test(wide['OJ_2.0mg'] - wide['VC_2.0mg'], paired = FALSE, var.equal = FALSE)
+dose.2.0$conf.int
+```
+
+```
+## [1] -4.328976  4.168976
+## attr(,"conf.level")
+## [1] 0.95
+```
+
+```r
+dose.2.0$p.value
+```
+
+```
+## [1] 0.9669567
+```
+Based on this test the **H0** hypothesis accepted at this dose.
+
+## Conclusion
+
+Through exploration of the data, Orange Juice appeared to more effective at low dose (0.5 mg, 1.0 mg). Using the Student's t-test this insight into the data was confirmed. 
 
