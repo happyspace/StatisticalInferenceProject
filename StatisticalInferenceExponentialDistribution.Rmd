@@ -2,10 +2,10 @@
 title: 'Statistical Inference: Exponential Distribution'
 author: "Eddie Warner"
 output:
-  pdf_document: default
   html_document:
     keep_md: yes
     theme: united
+  pdf_document: default
 references:
 - URL: https://en.wikipedia.org/wiki/Exponential_distribution
   authors:
@@ -22,6 +22,8 @@ library(ggplot2)
 library(dplyr)
 library(data.table)
 library(reshape2)
+
+library(knitr)
 ```
 
 Explore the exponential distribution as this distribution conforms to the law of large numbers and the how this distribution compares to the Central Limit Theorem. 
@@ -109,12 +111,12 @@ predicted_means = NULL
 for (i in 1 : length(samples)) {    predicted_means <- c(predicted_means, ((1/lambda)^2)/ samples[i])}
 # calculate actual variance for our sample means
 col_var <- sample_means %>% summarise_each(funs(var))
+names(predicted_means) <- names(col_var)
 ```
 
-`r predicted_means`  
+`r kable(predicted_means)`  
   
-`r col_var`  
-
+`r kable(col_var)`  
 
 In a separate calculation the mean of the actual variance for the Exponential Distribution will approach the variance of the population. 
 
@@ -129,7 +131,7 @@ col_var_mean <- sample_var %>% summarise_each(funs(mean))
 
 As noted in the facts secion above the variance for $\lambda = .2$ is 25.  
 
-`r col_var_mean`
+`r kable(col_var_mean)`
 
 ## Distribution: 
 

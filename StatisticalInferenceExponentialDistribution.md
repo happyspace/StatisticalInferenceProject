@@ -5,7 +5,6 @@ Eddie Warner
 
 
 
-
 Explore the exponential distribution as this distribution conforms to the law of large numbers and the how this distribution compares to the Central Limit Theorem. 
 
 Definition of the exponential distribution and relevant characteristics. 
@@ -39,8 +38,7 @@ Plot sample mean vs theorectical mean (population mean) as the sample mean incre
 
 
 ```r
-set.seed(seed)
-sample_means <- data.frame( twenty = replicate(num, mean(rexp(samples[1], lambda))))
+set.seed(seed); sample_means <- data.frame( twenty = replicate(num, mean(rexp(samples[1], lambda))))
 sample_means <- sample_means %>% 
     mutate(thirty = replicate(num, mean(rexp(samples[2], lambda)))) %>%     
     mutate(fourty = replicate(num, mean(rexp(samples[3], lambda)))) %>% 
@@ -65,8 +63,8 @@ See plots below for which show not only that the sample mean approaches the popu
 melt_sample_means <- reshape2::melt(data = sample_means, id.vars = c())
 means_plot <- ggplot(melt_sample_means,aes(x = value)) 
 means_plot <-  means_plot +  facet_wrap(~variable, scales = "fixed")  
-means_plot <-  means_plot +  geom_histogram(col="green4", fill="green",  alpha = .2, binwidth=.1,
-                 aes(y = ..density..))
+means_plot <-  means_plot +  geom_histogram(col="green4", fill="green",  alpha = .2, binwidth=.1, 
+                                            aes(y = ..density..))
 means_plot <-  means_plot + geom_vline(xintercept = 5, col="red3")
 means_plot <-  means_plot + geom_density(col="grey2", size = 1)
 means_plot
@@ -83,24 +81,36 @@ The sample variance of the mean sould approach the theoretical mean of the sampl
 ```r
 predicted_means = NULL
 # calculate predicted varance for our sample sizes
-for (i in 1 : length(samples)) {
-    predicted_means <- c(predicted_means, ((1/lambda)^2)/ samples[i])
-}
+for (i in 1 : length(samples)) {    predicted_means <- c(predicted_means, ((1/lambda)^2)/ samples[i])}
 # calculate actual variance for our sample means
 col_var <- sample_means %>% summarise_each(funs(var))
+names(predicted_means) <- names(col_var)
 ```
 
-1.25, 0.8333333, 0.625, 0.5  
-  
-1.1796791, 0.8466509, 0.6348968, 0.5169846  
 
+
+-------  ----------
+twenty    1.2500000
+thirty    0.8333333
+fourty    0.6250000
+fifty     0.5000000
+-------  ----------
+
+  
+  
+
+
+   twenty      thirty      fourty       fifty
+---------  ----------  ----------  ----------
+ 1.179679   0.8466509   0.6348968   0.5169846
+
+  
 
 In a separate calculation the mean of the actual variance for the Exponential Distribution will approach the variance of the population. 
 
 
 ```r
-set.seed(seed)
-sample_var <- data.frame( twenty = replicate(num, var(rexp(samples[1], lambda))))
+set.seed(seed); sample_var <- data.frame( twenty = replicate(num, var(rexp(samples[1], lambda))))
 sample_var <- sample_var %>% 
     mutate(thirty = replicate(num, var(rexp(samples[2], lambda)))) %>%     
     mutate(fourty = replicate(num, var(rexp(samples[3], lambda)))) %>% 
@@ -110,10 +120,22 @@ col_var_mean <- sample_var %>% summarise_each(funs(mean))
 
 As noted in the facts secion above the variance for $\lambda = .2$ is 25.  
 
-24.8444376, 25.0083949, 25.1132493, 24.9151761
+
+
+   twenty     thirty     fourty      fifty
+---------  ---------  ---------  ---------
+ 24.84444   25.00839   25.11325   24.91518
+
+
 
 ## Distribution: 
 
-Via figures and text, explain how one can tell the distribution is approximately normal.
+A distribution is aproximently normal if that distribution is symetric around the mean and fits within a normal distribution. See figure below.
+
+"In probability theory, the central limit theorem (CLT) states that, given certain conditions, the arithmetic mean of a sufficiently large number of iterates of independent random variables, each with a well-defined expected value and well-defined variance, will be approximately normally distributed, regardless of the underlying distribution."
+
+![](StatisticalInferenceExponentialDistribution_files/figure-html/normal-1.png) 
+
+
 
 ## References:
